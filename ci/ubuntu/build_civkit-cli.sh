@@ -2,10 +2,11 @@
 
 set -o errexit
 
-# Check if the civkit-cli binary exists
-if [ -f "../../target/debug/civkit-cli" ]; then
-    echo "civkit-cli build: SUCCESS"
+cd ../../target/debug
+
+if cargo build --bin civkit-cli --target=x86_64-unknown-linux-gnu; then
+  echo "civkit-cli build: SUCCESS"
 else
-    echo "civkit-cli build: FAILURE"
-    exit 1
+  echo "civkit-cli build: FAILURE"
+  exit 1
 fi
