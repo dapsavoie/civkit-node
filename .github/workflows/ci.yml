@@ -1,0 +1,27 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest] # Add Debian when available on GitHub Actions
+        rust-version: [stable]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        rust-version: ${{ matrix.rust-version }}
+    - name: Install dependencies
+      run: sudo apt-get install -y protobuf # You may need to adjust this for different OSes
+    - name: Build
+      run: cargo build
+    - name: Check binaries
+      run: |
+        test -f target/debug/civkit-cli
+        test -f target/debug/civkitd
+        test -f target/debug/civkit-sample
