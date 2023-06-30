@@ -12,14 +12,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup Rust
       uses: actions-rs/toolchain@v1
       with:
-        rust-version: ${{ matrix.rust-version }}
+        toolchain: ${{ matrix.rust-version }}
+
     - name: Install dependencies
       run: sudo apt-get install -y protobuf # You may need to adjust this for different OSes
+
+    - name: Build Debian packages
+      if: matrix.os == 'ubuntu-latest' # Only build Debian packages on Ubuntu
+      uses: debpack/debpack@v1
+      with:
+        distribution: bullseye
+        packages: .
+
     - name: Build
       run: cargo build
+
     - name: Check binaries
       run: |
         test -f target/debug/civkit-cli
