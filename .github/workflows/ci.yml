@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-20.04, macos-latest]
+        os: [ubuntu-22.04, macos-13, debian-latest]
         rust:
           - stable
     runs-on: ${{ matrix.os }}
@@ -27,41 +27,11 @@ jobs:
     
     - name: Install protobuf compiler
       run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+        if [ "${{ matrix.os }}" == "macos-13" ]; then
           brew install protobuf
         else
           sudo apt-get install -y protobuf-compiler
         fi
-
-    - name: Build civkit-cli
-      run: cargo build --bin civkit-cli --verbose
-
-    - name: Build civkitd
-      run: cargo build --bin civkitd --verbose
-
-    - name: Build civkit-sample
-      run: cargo build --bin civkit-sample --verbose
-
-  build_debian:
-
-    runs-on: ubuntu-latest
-
-    container:
-      image: debian:latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - uses: Swatinem/rust-cache@v2
-
-    - name: Install dependencies
-      run: |
-          apt-get update
-          apt-get install -y curl gcc protobuf-compiler
-
-    - name: Install Rust Toolchain (stable)
-      run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
-          source $HOME/.cargo/env
 
     - name: Build civkit-cli
       run: cargo build --bin civkit-cli --verbose
