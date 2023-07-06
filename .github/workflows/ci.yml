@@ -1,42 +1,53 @@
-name: CI
+name: Build
 
-on:
-  push:
-    branches:
-      - '*'
+on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        rust:
+          - stable
+          - beta
+          - nightly
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler
-
-      - name: Build civkit-cli
-        run: |
-          cd ci/ubuntu
-          ./setup_env.sh
-          ./build_civkit-cli.sh
-
-      - name: Build civkitd
-        run: |
-          cd ci/ubuntu
-          ./setup_env.sh
-          ./build_civkitd.sh
-
-      - name: Build civkit-sample
-        run: |
-          cd ci/ubuntu
-          ./setup_env.sh
-          ./build_civkit-sample.sh
+    - uses: actions/checkout@v2
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: ${{ matrix.rust }}
+        override: true
+    - name: Setup environment
+      run: |
+        export LC_ALL=C.UTF-8
+        echo "Environment setup completed."
+    - name: Build and check civkit-cli
+      run: |
+        ./build_civkit-cli.sh
+        if [ -f "civkit-cli" ]; then
+            echo "civkit-cli build: SUCCESS"
+        else
+            echo "civkit-cli build: FAILURE"
+            exit 1
+        fi
+    - name: Build and check civkitd
+      run: |
+        ./build_civkitd.sh
+        if [ -f "civkitd" ]; then
+            echo "civkitd build: SUCCESS"
+        else
+            echo "civkitd build: FAILURE"
+            exit 1
+        fi
+    - name: Build and check civkit-sample
+      run: |
+        ./build_civkit-sample.sh
+        if [ -f "civkit-sample" ]; then
+            echo "civkit-sample build: SUCCESS"
+        else
+            echo "civkit-sample build: FAILURE"
+            exit 1
+        fi
