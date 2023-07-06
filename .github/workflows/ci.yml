@@ -25,22 +25,13 @@ jobs:
         override: true
 
     - name: Build civkit-cli
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --package civkit-cli --verbose
+      run: cargo build --bin civkit-cli --verbose
 
     - name: Build civkitd
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --package civkitd --verbose
+      run: cargo build --bin civkitd --verbose
 
     - name: Build civkit-sample
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --package civkit-sample --verbose
+      run: cargo build --bin civkit-sample --verbose
 
   build-debian:
     runs-on: ubuntu-latest
@@ -59,10 +50,10 @@ jobs:
         source $HOME/.cargo/env
 
     - name: Build civkit-cli
-      run: cargo build --package civkit-cli --verbose
+      run: cargo build --bin civkit-cli --verbose
 
     - name: Build civkitd
-      run: cargo build --package civkitd --verbose
+      run: cargo build --bin civkitd --verbose
 
     - name: Build civkit-sample
-      run: cargo build --package civkit-sample --verbose
+      run: cargo build --bin civkit-sample --verbose
