@@ -8,10 +8,9 @@ on:
 
 jobs:
   build:
-
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-13, debian-latest]
+        os: [ubuntu-22.04, macos-13]
         rust:
           - stable
     runs-on: ${{ matrix.os }}
@@ -42,33 +41,23 @@ jobs:
     - name: Build civkit-sample
       run: cargo build --bin civkit-sample --verbose
 
-      build_debian:
+  build_debian:
+    runs-on: ubuntu-latest
 
-        runs-on: ubuntu-latest
-    
-        container:
-          image: debian:latest
-    
-        steps:
-        - uses: actions/checkout@v2
-        - uses: Swatinem/rust-cache@v2
-    
-        - name: Install dependencies
-          run: |
-              apt-get update
-              apt-get install -y curl gcc protobuf-compiler
-    
-        - name: Install Rust Toolchain (stable)
-          shell: bash
-          run: |
-              curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
-              echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-    
-        - name: Build civkit-cli
-          run: cargo build --bin civkit-cli --verbose
-    
-        - name: Build civkitd
-          run: cargo build --bin civkitd --verbose
-    
-        - name: Build civkit-sample
-          run: cargo build --bin civkit-sample --verbose
+    container:
+      image: debian:latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: Swatinem/rust-cache@v2
+
+    - name: Install dependencies
+      run: |
+          apt-get update
+          apt-get install -y curl gcc protobuf-compiler
+
+    - name: Install Rust Toolchain (stable)
+      shell: bash
+      run: |
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
+            echo "$HOME/.cargo/bin" >> $GITHUB_PATH
