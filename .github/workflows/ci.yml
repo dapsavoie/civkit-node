@@ -36,27 +36,3 @@ jobs:
     - name: Build civkit-sample
       run: cargo build --bin civkit-sample --verbose
 
-  build-debian:
-    runs-on: ubuntu-latest
-    container:
-      image: debian:latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        apt-get update
-        apt-get install -y curl build-essential protobuf-compiler
-    - name: Install Rust
-      run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        source $HOME/.cargo/env
-
-    - name: Build civkit-cli
-      run: cargo build --bin civkit-cli --verbose
-
-    - name: Build civkitd
-      run: cargo build --bin civkitd --verbose
-
-    - name: Build civkit-sample
-      run: cargo build --bin civkit-sample --verbose
