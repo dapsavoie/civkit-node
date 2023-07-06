@@ -26,7 +26,7 @@ jobs:
         echo "Environment setup completed."
     - name: Build and check civkit-cli
       run: |
-        ./build_civkit-cli.sh
+        ./ci/ubuntu/build_civkit-cli.sh
         if [ -f "civkit-cli" ]; then
             echo "civkit-cli build: SUCCESS"
         else
@@ -35,7 +35,7 @@ jobs:
         fi
     - name: Build and check civkitd
       run: |
-        ./build_civkitd.sh
+        ./ci/ubuntu/build_civkitd.sh
         if [ -f "civkitd" ]; then
             echo "civkitd build: SUCCESS"
         else
@@ -44,7 +44,7 @@ jobs:
         fi
     - name: Build and check civkit-sample
       run: |
-        ./build_civkit-sample.sh
+        ./ci/ubuntu/build_civkit-sample.sh
         if [ -f "civkit-sample" ]; then
             echo "civkit-sample build: SUCCESS"
         else
