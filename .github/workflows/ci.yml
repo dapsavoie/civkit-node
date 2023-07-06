@@ -1,46 +1,64 @@
-name: Build
+name: Rust CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        rust:
+          - stable
+    runs-on: ${{ matrix.os }}
+
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Rust
+    - name: Set up Rust
       uses: actions-rs/toolchain@v1
       with:
-        profile: minimal
-        toolchain: stable
+        toolchain: ${{ matrix.rust }}
         override: true
-    - name: Setup environment
+
+    - name: Build civkit-cli
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --package civkit-cli --verbose
+
+    - name: Build civkitd
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --package civkitd --verbose
+
+    - name: Build civkit-sample
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --package civkit-sample --verbose
+
+  build-debian:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Rust
       run: |
-        export LC_ALL=C.UTF-8
-        echo "Environment setup completed."
-    - name: Build and check civkit-cli
-      run: |
-        ./ci/ubuntu/build_civkit-cli.sh
-        if [ -f "civkit-cli" ]; then
-            echo "civkit-cli build: SUCCESS"
-        else
-            echo "civkit-cli build: FAILURE"
-            exit 1
-        fi
-    - name: Build and check civkitd
-      run: |
-        ./ci/ubuntu/build_civkitd.sh
-        if [ -f "civkitd" ]; then
-            echo "civkitd build: SUCCESS"
-        else
-            echo "civkitd build: FAILURE"
-            exit 1
-        fi
-    - name: Build and check civkit-sample
-      run: |
-        ./ci/ubuntu/build_civkit-sample.sh
-        if [ -f "civkit-sample" ]; then
-            echo "civkit-sample build: SUCCESS"
-        else
-            echo "civkit-sample build: FAILURE"
-            exit 1
-        fi
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source $HOME/.cargo/env
+
+    - name: Build civkit-cli
+      run: cargo build --package civkit-cli --verbose
+
+    - name: Build civkitd
+      run: cargo build --package civkitd --verbose
+
+    - name: Build civkit-sample
+      run: cargo build --package civkit-sample --verbose
