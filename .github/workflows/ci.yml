@@ -47,8 +47,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     container:
-      image: debian:11.7
-
+      image: debian:latest
     steps:
     - uses: actions/checkout@v2
 
