@@ -9,6 +9,7 @@
 
 //! The componnent managing the reception of staking credentials and zap
 //! notes to ensure notes are not wasting CivKit node ressources.
+use std::io::Cursor;
 
 use bitcoin::{BlockHash, Txid};
 use bitcoin::blockdata::constants::genesis_block;
@@ -86,10 +87,13 @@ impl IssuanceManager {
 			Tag::Credential(credential_bytes) => { credential_bytes },
 			_ => { return Err(IssuanceError::InvalidDataCarrier); },
 		};
-		let credential_authentication = if let Ok(credential_authentication) = CredentialAuthenticationPayload::decode(&credential_msg_bytes) {
+		let mut reader = Cursor::new(credential_msg_bytes.as_bytes());
+		let credential_authentication = if let Ok(credential_authentication) = CredentialAuthenticationPayload::decode(&mut reader) {
 			credential_authentication 
-		} else { return Err(IssuanceError::Parse); };
-
+		} else { 
+			return Err(IssuanceError::Parse); 
+		};
+		
 		if credential_authentication.credentials.len() > MAX_CREDENTIALS_PER_REQUEST {
 			return Err(IssuanceError::Policy);
 		}
@@ -126,9 +130,9 @@ impl RedemptionManager {
 
 		let service_id = 0;
 		let ret = false;
-		let reason = vec![];
+		//let reason = vec![];
 
-		let mut service_deliverance_result = ServiceDeliveranceResult::new(service_id, ret, reason);
+		let mut service_deliverance_result = ServiceDeliveranceResult::new(service_id, ret);
 
 		Ok(service_deliverance_result)
 	}
