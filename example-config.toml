@@ -16,3 +16,14 @@ cli_port = 50031
 
 [logging]
 level = "info"
+
+[mainstay]
+url = "https://mainstay.xyz/api/v1"
+position = 1
+token = "14b2b754-5806-4157-883c-732baf88849c"
+
+[bitcoind_params]
+rpc_user = "umbrel"
+rpc_password = "9AvLSzhYGgJ7Hs39IRfCxI4MLSywzh3_GyLRphdn7z4="
+host = "cbe2f2faf4w4m5i2jdftivyhxdzu34lvkheffvj6e2rhajdatkp7lkad.onion"
+port = "8332"
